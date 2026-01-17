@@ -38,7 +38,6 @@
             margin-bottom: 30px;
         }
 
-        /* Input Style */
         .otp-group { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
         .otp-input {
             width: 45px; height: 55px;
@@ -55,9 +54,9 @@
             border: none; padding: 14px; width: 100%;
             border-radius: 50px; font-weight: bold; cursor: pointer;
             letter-spacing: 1px; transition: 0.3s;
+            color: black;
         }
 
-        /* Success Screen */
         #success-screen { display: none; opacity: 0; transform: scale(0.8); transition: 0.8s; }
         .success-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 32px; margin-bottom: 10px; }
 
@@ -67,6 +66,11 @@
 </head>
 <body>
 
+    <audio id="click-sound" src="click.mp3"></audio>
+    <audio id="error-sound" src="error.mp3"></audio>
+    <audio id="firework-sound" src="firework.mp3"></audio>
+    <audio id="love-song" src="love-song.mp3" loop></audio>
+
     <div class="vault-box" id="vault">
         <div class="brand">WAREHOUSE</div>
 
@@ -74,7 +78,7 @@
             <div style="font-size: 35px; margin-bottom: 10px;">🗝️</div>
             <div style="font-weight: 300; color: #ccc;">Enter Secret Code</div>
             <div class="otp-group">
-                <input type="text" maxlength="1" class="otp-input" id="c1" onkeyup="next(this, 'c2')">
+                <input type="text" maxlength="1" class="otp-input" id="c1" onkeyup="next(this, 'c2')" autofocus>
                 <input type="text" maxlength="1" class="otp-input" id="c2" onkeyup="next(this, 'c3')">
                 <input type="text" maxlength="1" class="otp-input" id="c3" onkeyup="next(this, 'c4')">
                 <input type="text" maxlength="1" class="otp-input" id="c4">
@@ -90,19 +94,57 @@
     </div>
 
     <script>
-        function next(el, nextId) { if (el.value) document.getElementById(nextId).focus(); }
+        // เรียกใช้ตัวแปรเสียง
+        const clickSnd = document.getElementById('click-sound');
+        const errorSnd = document.getElementById('error-sound');
+        const fireworkSnd = document.getElementById('firework-sound');
+        const loveSng = document.getElementById('love-song');
+
+        function next(el, nextId) { 
+            if (el.value) {
+                clickSnd.currentTime = 0; // รีเซ็ตเสียงเพื่อให้กดรัวๆ ได้
+                clickSnd.play().catch(()=>{}); // เล่นเสียง Click
+                document.getElementById(nextId).focus(); 
+            }
+        }
 
         function unlock() {
             const code = document.getElementById('c1').value + document.getElementById('c2').value + 
                          document.getElementById('c3').value + document.getElementById('c4').value;
             
             if (code === "1402") {
-                // เอฟเฟกต์พลุ
+                // เล่นเสียงพลุและเพลงรัก
+                fireworkSnd.play().catch(()=>{});
+                loveSng.volume = 0.5;
+                loveSng.play().catch(()=>{});
+
                 confetti({
                     particleCount: 200, spread: 80, origin: { y: 0.6 },
                     colors: ['#D4AF37', '#ffffff', '#AA8939']
                 });
 
-                document.getElementById('lock-screen').style.display = 'none';
-                const success = document.getElementById('success-screen');
-                success.style.display = 'block';
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('lock-screen').style.display = 'none';
+                    const success = document.getElementById('success-screen');
+                    success.style.display = 'block';
+                    setTimeout(() => { 
+                        success.style.opacity = '1'; 
+                        success.style.transform = 'scale(1)'; 
+                    }, 50);
+                }, 500);
+            } else {
+                // เล่นเสียง Error และสั่น
+                errorSnd.play().catch(()=>{});
+                const v = document.getElementById('vault');
+                v.classList.add('shake');
+                setTimeout(() => v.classList.remove('shake'), 400);
+                
+                // ล้างค่ารหัส
+                document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+                document.getElementById('c1').focus();
+            }
+        }
+    </script>
+</body>
+</html>
