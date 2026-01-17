@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEMO - WAREHOUSE</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Kanit:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --bg: #0A0A0A; }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .vault-box {
+            text-align: center;
+            padding: 40px 20px;
+            width: 320px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 4px;
+            color: var(--gold);
+            font-size: 12px;
+            margin-bottom: 30px;
+        }
+
+        /* Input Style */
+        .otp-group { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
+        .otp-input {
+            width: 45px; height: 55px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            text-align: center; font-size: 22px; color: var(--gold);
+            outline: none; transition: 0.3s;
+        }
+        .otp-input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+
+        .btn-open {
+            background: linear-gradient(135deg, var(--gold), #8A6D3B);
+            border: none; padding: 14px; width: 100%;
+            border-radius: 50px; font-weight: bold; cursor: pointer;
+            letter-spacing: 1px; transition: 0.3s;
+        }
+
+        /* Success Screen */
+        #success-screen { display: none; opacity: 0; transform: scale(0.8); transition: 0.8s; }
+        .success-title { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 32px; margin-bottom: 10px; }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        .shake { animation: shake 0.3s ease-in-out 2; }
+    </style>
+</head>
+<body>
+
+    <div class="vault-box" id="vault">
+        <div class="brand">WAREHOUSE</div>
+
+        <div id="lock-screen">
+            <div style="font-size: 35px; margin-bottom: 10px;">🗝️</div>
+            <div style="font-weight: 300; color: #ccc;">Enter Secret Code</div>
+            <div class="otp-group">
+                <input type="text" maxlength="1" class="otp-input" id="c1" onkeyup="next(this, 'c2')">
+                <input type="text" maxlength="1" class="otp-input" id="c2" onkeyup="next(this, 'c3')">
+                <input type="text" maxlength="1" class="otp-input" id="c3" onkeyup="next(this, 'c4')">
+                <input type="text" maxlength="1" class="otp-input" id="c4">
+            </div>
+            <button class="btn-open" onclick="unlock()">UNLOCK PASSION</button>
+        </div>
+
+        <div id="success-screen">
+            <div class="success-title">SUCCESS</div>
+            <p style="font-weight: 300; color: #eee;">Welcome to the Archive</p>
+            <div style="color: var(--gold); font-size: 14px; margin-top: 20px; letter-spacing: 3px;">CLICK LOVE 2026</div>
+        </div>
+    </div>
+
+    <script>
+        function next(el, nextId) { if (el.value) document.getElementById(nextId).focus(); }
+
+        function unlock() {
+            const code = document.getElementById('c1').value + document.getElementById('c2').value + 
+                         document.getElementById('c3').value + document.getElementById('c4').value;
+            
+            if (code === "1402") {
+                // เอฟเฟกต์พลุ
+                confetti({
+                    particleCount: 200, spread: 80, origin: { y: 0.6 },
+                    colors: ['#D4AF37', '#ffffff', '#AA8939']
+                });
+
+                document.getElementById('lock-screen').style.display = 'none';
+                const success = document.getElementById('success-screen');
+                success.style.display = 'block';
